@@ -4,13 +4,17 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>I am Stone | Stone</title>
+    <title>《webkit技术内幕》——12.安全机制 | Stone</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
     
     
-    <meta name="description" content="工作经验: 2013.3~今天  百度 商业基础平台部  前端研发
-技术: 前端的那些东东……
-理想: 在菜鸟的路上，努力前行……">
+    <meta name="description" content="域: 域名+传输协议+端口号；同源策略；
+
+XSS: CROSS SITE SCRIPTING; HTTP头——“X-XSS-Protection”；
+
+CSP: 利用http消息头，防止xss的技术。详细：http://drops.wooyun.org/tips/1439
+
+CORS: 利用htt">
     
     
     
@@ -67,15 +71,15 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2014/11/30/hello-world/" title="I am Stone" itemprop="url">I am Stone</a>
+      <a href="/2014/11/30/webkit12/" title="《webkit技术内幕》——12.安全机制" itemprop="url">《webkit技术内幕》——12.安全机制</a>
   </h1>
   <p class="article-author">By
     
       <a href="http://yoursite.com" title="null">null</a>
     </p>
   <p class="article-time">
-    <time datetime="2014-11-30T08:58:24.000Z" itemprop="datePublished">Nov 30 2014</time>
-    Updated:<time datetime="2014-11-30T08:58:24.000Z" itemprop="dateModified">Nov 30 2014</time>
+    <time datetime="2014-11-30T08:37:26.000Z" itemprop="datePublished">Nov 30 2014</time>
+    Updated:<time datetime="2014-11-30T08:37:26.000Z" itemprop="dateModified">Nov 30 2014</time>
     
   </p>
 </header>
@@ -87,9 +91,22 @@
 		
 		</div>
 		
-		<pre><code>工作经验: 2013.3~今天  百度 商业基础平台部  前端研发
-技术: 前端的那些东东……
-理想: 在菜鸟的路上，努力前行…… 
+		<pre><code>域: 域名+传输协议+端口号；同源策略；
+
+XSS: CROSS SITE SCRIPTING; HTTP头——“X-XSS-Protection”；
+
+CSP: 利用<span class="keyword">http</span>消息头，防止xss的技术。详细：<span class="keyword">http</span>://drops.wooyun.org/tips/<span class="number">1439</span>
+
+CORS: 利用<span class="keyword">http</span>消息头，定义不同域之间交互数据的方式。
+
+Cross Document Messaging: window.postMessage 解决跨域问题。
+
+安全传输协议: <span class="keyword">https</span>~在<span class="keyword">http</span>基础上使用SSL技术对传输数据进行加密。
+
+沙箱模型: 浏览器认为网络上的网页总是不安全的，
+因此讲网页的运行限制在一个特定的环境中，使它只能访问有限的功能，
+那么及时网页工作的渲染引擎被攻击，也不能获取渲染引擎工作的主机系统中的任何权限。
+沙箱模型严重依赖操作系统提供的技术。
 </code></pre>  
 	</div>
 		<footer class="article-footer clearfix">
@@ -99,7 +116,7 @@
 
 <div class="article-share" id="share">
 
-  <div data-url="http://yoursite.com/2014/11/30/hello-world/" data-title="I am Stone | Stone" data-tsina="null" class="share clearfix">
+  <div data-url="http://yoursite.com/2014/11/30/webkit12/" data-title="《webkit技术内幕》——12.安全机制 | Stone" data-tsina="null" class="share clearfix">
   </div>
 
 </div>
@@ -108,11 +125,19 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2014/11/30/hello-world/" title="I am Stone">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  I am Stone</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2014/11/30/webkit12/"  title="《webkit技术内幕》——12.安全机制">
+<a href="/2014/11/30/webkit13/"  title="《webkit技术内幕》——13.移动webkit">
  <strong>NEXT:</strong><br/> 
- <span>《webkit技术内幕》——12.安全机制
+ <span>《webkit技术内幕》——13.移动webkit
 </span>
 </a>
 </div>
