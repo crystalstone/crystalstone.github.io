@@ -74,7 +74,7 @@ const server = new WebpackDevServer(compil">
     </p>
   <p class="article-time">
     <time datetime="2015-09-21T11:46:21.000Z" itemprop="datePublished">Sep 21 2015</time>
-    更新日期:<time datetime="2015-09-21T12:04:52.000Z" itemprop="dateModified">Sep 21 2015</time>
+    更新日期:<time datetime="2015-09-21T12:35:44.000Z" itemprop="dateModified">Sep 21 2015</time>
     
   </p>
 </header>
@@ -86,7 +86,7 @@ const server = new WebpackDevServer(compil">
 		<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#一-_源码分析"><span class="toc-number">1.</span> <span class="toc-text">一. 源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-1_依赖"><span class="toc-number">1.1.</span> <span class="toc-text">1.1  依赖</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2_源码分析"><span class="toc-number">1.2.</span> <span class="toc-text">1.2  源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-2-1_使用入口"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1  使用入口</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#1-2-2_webpack-dev-server_主代码分析"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2  webpack-dev-server 主代码分析</span></a></li></ol></li></ol></li></ol>
 		</div>
 		
-		<h3 id="一-_源码分析">一. 源码分析</h3><h4 id="1-1_依赖">1.1  依赖</h4><p><img src="/images/webpack-dev-server.png" alt="Alt text"></p>
+		<h3 id="一-_源码分析">一. 源码分析</h3><h4 id="1-1_依赖">1.1  依赖</h4><p><img src="/img/webpack-dev-server.png" alt="Alt text"></p>
 <h4 id="1-2_源码分析">1.2  源码分析</h4><h5 id="1-2-1_使用入口">1.2.1  使用入口</h5><pre><code><span class="keyword">const</span> compiler = webpack(wpConfig); <span class="comment">// webpack 编译器；wpConfig是webpack的配置文件</span>
 <span class="keyword">const</span> server = <span class="keyword">new</span> WebpackDevServer(compiler, {
     contentBase: wpConfig.context,
@@ -269,11 +269,19 @@ app.<span class="keyword">get</span>(<span class="string">"*"</span>, <span clas
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2015/09/21/hello-world/" title="I am Stone">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  I am Stone</span>
+</a>
+</div>
+
 
 <div class="next">
-<a href="/2015/09/21/hello-world/"  title="I am Stone">
+<a href="/2015/09/21/es5/"  title="es5新特性">
  <strong>NEXT:</strong><br/> 
- <span>I am Stone
+ <span>es5新特性
 </span>
 </a>
 </div>
