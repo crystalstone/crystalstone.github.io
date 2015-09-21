@@ -1,0 +1,321 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>es5新特性 | Stone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    
+    <meta name="description" content="##MutationObserverMutation Observer（变动观察器）是监视DOM变动的接口。当DOM对象树发生任何变动的时候，Mutation Observer会得到通知。
+在概念上，它很接近事件。可以理解为，当DOM发生变动，会触发Mutation Observer事件。但是，它与">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Stone" title="Stone"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Stone">Stone</a></h1>
+				<h2 class="blog-motto">努力成为一名好前端~</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/09/21/es5/" title="es5新特性" itemprop="url">es5新特性</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="null">null</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2015-09-21T11:41:22.000Z" itemprop="datePublished">Sep 21 2015</time>
+    更新日期:<time datetime="2014-12-05T08:32:30.000Z" itemprop="dateModified">Dec 5 2014</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		
+		</div>
+		
+		<p>##MutationObserver<br>Mutation Observer（变动观察器）是监视DOM变动的接口。当DOM对象树发生任何变动的时候，Mutation Observer会得到通知。</p>
+<p>在概念上，它很接近事件。可以理解为，当DOM发生变动，会触发Mutation Observer事件。但是，它与事件有一个本质不同：事件是同步触发，也就是说，当DOM发生变动，立刻会触发相应的事件；Mutation Observer则是异步触发，DOM发生变动以后，并不会马上触发，而是要等到当前所有DOM操作都结束后才触发。</p>
+<p>这样设计是为了应付DOM变动频繁的特点。举例来说，如果在文档中连续插入1000个段落（p元素），就会连续触发1000个插入事件，执行每个事件的回调函数，这很可能造成浏览器的卡顿；而Mutation Observer完全不同，只在1000个段落都插入结束后才会触发，而且只触发一次。</p>
+<p>Mutation Observer有以下特点：</p>
+<p>它等待所有脚本任务完成后，才会运行，即采用异步方式。</p>
+<p>它把DOM变动记录封装成一个数组进行处理，而不是一条条地个别处理DOM变动。</p>
+<p>它既可以观察发生在DOM节点的所有变动，也可以观察某一类变动。</p>
+<p>目前，Firefox（14+）、 Chrome(26+)、Opera（15+）、IE（11+）和Safari（6.1+）支持这个API。Safari 6.0和Chrome 18-25使用这个API的时候，需要加上WebKit前缀（WebKitMutationObserver）。可以使用下面的表达式，检查当前浏览器是否支持这个API。</p>
+<p>var MutationObserver = window.MutationObserver ||<br>        window.WebKitMutationObserver ||<br>        window.MozMutationObserver;</p>
+<p>var observeMutationSupport = !!MutationObserver;<br>使用方法<br>首先，使用MutationObserver构造函数，新建一个实例，同时指定这个实例的回调函数。</p>
+<p>var observer = new MutationObserver( callback );<br>observe方法<br>observe方法指定所要观察的DOM元素，以及所要观察的特定变动。</p>
+<p>var article = document.querySelector( ‘article’ );</p>
+<p>var  options = {<br>    ‘childList’: true,<br>    ‘attributes’:true<br>} ;</p>
+<p>observer.observe( article, options );<br>上面代码首先指定，所要观察的DOM元素是article，然后，指定所要观察的变动是子元素变动和属性变动。最后，将这两个限定条件作为参数，传入observer对象的observe方法。</p>
+<p>Mutation Observer所观察的DOM变动（即上面代码的option对象），包含以下类型：</p>
+<p>childList：子元素的变动。<br>attributes：属性的变动。<br>characterData：节点内容或节点文本的变动。<br>subtree：所有下属节点（包括子节点和子节点的子节点）的变动。<br>想要观察哪一种变动类型，就在option对象中指定它的值为true。需要注意的是，不能单独观察subtree变动，必须同时指定childList、attributes和characterData中的一种或多种。</p>
+<p>除了变动类型，option对象还可以设定以下属性：</p>
+<p>attributeOldValue：值为true或者false。如果为true，则表示需要记录变动前的属性值。<br>characterDataOldValue：值为true或者false。如果为true，则表示需要记录变动的数据值。<br>attributeFilter：值为一个数组，表示需要观察的特定属性（比如[‘class’,’src’]）。<br>disconnect方法和takeRecords方法<br>disconnect方法用来停止观察。发生相应变动时，不再调用回调函数。</p>
+<p>observer.disconnect();<br>takeRecords方法用来清除变动记录，即不再处理未处理的变动。</p>
+<p>observer.takeRecords();<br>MutationRecord对象<br>DOM对象每次发生变化，就会生成一条变动记录。这个变动记录对应一个MutationRecord对象，该对象包含了与变动相关的所有信息。Mutation Observer处理的是一个个MutationRecord对象所组成的数组。</p>
+<p>MutationRecord对象包含了DOM的相关信息，有如下属性：</p>
+<p>type：观察的变动类型（attribute、characterData或者childList）。<br>target：发生变动的DOM对象。<br>addedNodes：新增的DOM对象。<br>removedNodes：删除的DOM对象。<br>previousSibling：前一个同级DOM对象，如果没有则返回null。<br>nextSibling：下一个同级DOM对象，如果没有则返回null。<br>attributeName：发生变动的属性。如果设置了attributeFilter，则只返回预先指定的属性。<br>oldValue：变动前的值。这个属性只对attribute和characterData变动有效，如果发生childList变动，则返回null。<br>实例<br>子元素的变动<br>下面的例子说明如何读取变动记录。</p>
+<p>var callback = function(records){<br>    records.map(function(record){<br>        console.log(‘Mutation type: ‘ + record.type);<br>        console.log(‘Mutation target: ‘ + record.target);<br>    });<br>};</p>
+<p>var mo = new MutationObserver(callback);</p>
+<p>var option = {<br>    ‘childList’: true,<br>    ‘subtree’: true<br>};</p>
+<p>mo.observe(document.body, option);<br>上面代码的观察器，观察body元素的所有下级元素（childList表示观察子元素，subtree表示观察子元素的下级元素）的变动。回调函数会在控制台显示所有变动的类型和目标元素。</p>
+<p>属性的变动<br>下面的例子说明如何追踪属性的变动。</p>
+<p>var callback = function(records){<br>    records.map(function(record){<br>        console.log(‘Previous attribute value: ‘ + record.oldValue);<br>    });<br>};</p>
+<p>var mo = new MutationObserver(callback);</p>
+<p>var element = document.getElementById(‘#my_element’);</p>
+<p>var options = {<br>    ‘attributes’: true,<br>    ‘attributeOldValue’: true<br>}</p>
+<p>mo.observe(element, options);<br>上面代码先设定追踪属性变动（’attributes’: true），然后设定记录变动前的值。实际发生变动时，会将变动前的值显示在控制台。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2015/09/21/es5/" data-title="es5新特性 | Stone" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2015/09/21/saber/" title="saber学习">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  saber学习</span>
+</a>
+</div>
+
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+  
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/webpack/" title="webpack">webpack<sup>1</sup></a></li>
+		
+			<li><a href="/tags/webpack-dev-server/" title="webpack-dev-server">webpack-dev-server<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2015 
+		
+		<a href="http://yoursite.com" title="Stone">Stone</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>

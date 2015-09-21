@@ -1,0 +1,9 @@
+# 忽略*.o和*.a文件
+*.DS_Store
+!.gitignore
+.eslintrc
+release/
+release.zip
+npm-debug.log
+/.idea/
+.idea/
