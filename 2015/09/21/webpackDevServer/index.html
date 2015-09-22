@@ -9,8 +9,7 @@
     
     
     <meta name="description" content="一. 源码分析1.1  依赖
-1.2  源码分析1.2.1  使用入口const compiler = webpack(wpConfig); // webpack 编译器；wpConfig是webpack的配置文件
-const server = new WebpackDevServer(compil">
+1.2  源码分析1.2.1  使用入口const compiler = webpack(wpConfig); // webpack &amp;#32534;&amp;#35793;&amp;#22120;&amp;#65307;wpConfig&amp;#26159;webpack&amp;#30340;&amp;#371">
     
     
     
@@ -74,7 +73,7 @@ const server = new WebpackDevServer(compil">
     </p>
   <p class="article-time">
     <time datetime="2015-09-21T11:46:21.000Z" itemprop="datePublished">Sep 21 2015</time>
-    更新日期:<time datetime="2015-09-21T12:35:44.000Z" itemprop="dateModified">Sep 21 2015</time>
+    更新日期:<time datetime="2015-09-22T03:31:10.000Z" itemprop="dateModified">Sep 22 2015</time>
     
   </p>
 </header>
@@ -87,47 +86,8 @@ const server = new WebpackDevServer(compil">
 		</div>
 		
 		<h3 id="一-_源码分析">一. 源码分析</h3><h4 id="1-1_依赖">1.1  依赖</h4><p><img src="/img/webpack-dev-server.png" alt="Alt text"></p>
-<h4 id="1-2_源码分析">1.2  源码分析</h4><h5 id="1-2-1_使用入口">1.2.1  使用入口</h5><pre><code><span class="keyword">const</span> compiler = webpack(wpConfig); <span class="comment">// webpack 编译器；wpConfig是webpack的配置文件</span>
-<span class="keyword">const</span> server = <span class="keyword">new</span> WebpackDevServer(compiler, {
-    contentBase: wpConfig.context,
-    publicPath: <span class="string">'/agent-asset/'</span>,
-    hot: <span class="literal">true</span>,
-    quiet: <span class="literal">false</span>,
-    noInfo: <span class="literal">false</span>,
-    watchOption: {
-        aggregateTimeout: <span class="number">300</span>, <span class="comment">// 延迟rebuild</span>
-        poll: <span class="literal">true</span>
-    },
-    headers, <span class="comment">// 设置res的头，一般可以不设置</span>
-    stats: { <span class="comment">// 一些console提示的配置，可忽略</span>
-        <span class="comment">// chunks: false,</span>
-        colors: <span class="literal">true</span>
-    },
-    historyApiFallback: { <span class="comment">// spa的historyback，可忽略</span>
-        index: <span class="string">'index.html'</span>
-    },
-    proxy: [
-        {
-            path: <span class="regexp">/^\/MOD/g</span>,
-            target: <span class="string">"http://192.168.1.224:8080"</span>
-        },
-        {
-             path: <span class="regexp">/^\/ADD/g</span>,
-             target: <span class="string">"http://192.168.1.224:8080"</span>
-        },
-        {
-             path: <span class="regexp">/^\/GET/g</span>,
-             target: <span class="string">"http://192.168.1.224:8080"</span>
-        }
-    ] <span class="comment">// 代理配置, 也可以是个object</span>
-});
-
-<span class="comment">// 监听8080端口，这里，很多文档里写成 server.listen(8080, 'localhost', function () { ....</span>
-<span class="comment">// 这样导致的问题是，localhost换成本机ip时，无法访问。</span>
-server.listen(<span class="number">8080</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>{
-    <span class="built_in">console</span>.log(<span class="string">'Webpack-Dev-Server: started on port 8080'</span>);
-});
-</code></pre><h5 id="1-2-2_webpack-dev-server_主代码分析">1.2.2  webpack-dev-server 主代码分析</h5><pre><code>问题一：webpack-dev-server 本质是用express启的一个server
+<h4 id="1-2_源码分析">1.2  源码分析</h4><h5 id="1-2-1_使用入口">1.2.1  使用入口</h5><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">const compiler = webpack(wpConfig); // webpack &#32534;&#35793;&#22120;&#65307;wpConfig&#26159;webpack&#30340;&#37197;&#32622;&#25991;&#20214;&#10;const server = new WebpackDevServer(compiler, &#123;&#10;    contentBase: wpConfig.context,&#10;    publicPath: &#39;/agent-asset/&#39;,&#10;    hot: true,&#10;    quiet: false,&#10;    noInfo: false,&#10;    watchOption: &#123;&#10;        aggregateTimeout: 300, // &#24310;&#36831;rebuild&#10;        poll: true&#10;    &#125;,&#10;    headers, // &#35774;&#32622;res&#30340;&#22836;&#65292;&#19968;&#33324;&#21487;&#20197;&#19981;&#35774;&#32622;&#10;    stats: &#123; // &#19968;&#20123;console&#25552;&#31034;&#30340;&#37197;&#32622;&#65292;&#21487;&#24573;&#30053;&#10;        // chunks: false,&#10;        colors: true&#10;    &#125;,&#10;    historyApiFallback: &#123; // spa&#30340;historyback&#65292;&#21487;&#24573;&#30053;&#10;        index: &#39;index.html&#39;&#10;    &#125;,&#10;    proxy: [&#10;     &#123;&#10;         path: /^\/MOD/g,&#10;         target: &#34;http://192.168.1.224:8080&#34;&#10;     &#125;,&#10;     &#123;&#10;          path: /^\/ADD/g,&#10;          target: &#34;http://192.168.1.224:8080&#34;&#10;     &#125;,&#10;     &#123;&#10;          path: /^\/GET/g,&#10;          target: &#34;http://192.168.1.224:8080&#34;&#10;     &#125;&#10; ] // &#20195;&#29702;&#37197;&#32622;, &#20063;&#21487;&#20197;&#26159;&#20010;object&#10;&#125;);&#10;&#10;// &#30417;&#21548;8080&#31471;&#21475;&#65292;&#36825;&#37324;&#65292;&#24456;&#22810;&#25991;&#26723;&#37324;&#20889;&#25104; server.listen(8080, &#39;localhost&#39;, function () &#123; ....&#10;// &#36825;&#26679;&#23548;&#33268;&#30340;&#38382;&#39064;&#26159;&#65292;localhost&#25442;&#25104;&#26412;&#26426;ip&#26102;&#65292;&#26080;&#27861;&#35775;&#38382;&#12290;&#10;server.listen(8080, function () &#123;&#10;    console.log(&#39;Webpack-Dev-Server: started on port 8080&#39;);&#10;&#125;);</span><br></pre></td></tr></table></figure>
+<h5 id="1-2-2_webpack-dev-server_主代码分析">1.2.2  webpack-dev-server 主代码分析</h5><pre><code>问题一：webpack-dev-server 本质是用express启的一个server
 .......
 <span class="comment">// 在lib/Server.js的48行左右</span>
 <span class="comment">// 使用express 启动一个service</span>
