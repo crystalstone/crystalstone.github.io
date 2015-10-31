@@ -1,0 +1,399 @@
+
+ <!DOCTYPE HTML>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+    <title>require返回Object带来的线上bug | Stone</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    
+    <meta name="description" content="2015-10-28 400上线 entry.biz.{hash}.js 404背景：400系统测试环境http://192.168.1.224:8080/internal/index.html； 线上 http://400.zufangzi.com；400第一版上线后，首页加载js太大，速度慢，进">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Stone" title="Stone"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Stone">Stone</a></h1>
+				<h2 class="blog-motto">努力成为一名好前端~</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜單">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:yoursite.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2015/10/31/require返回Object带来的线上bug/" title="require返回Object带来的线上bug" itemprop="url">require返回Object带来的线上bug</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://yoursite.com" title="null">null</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2015-10-31T09:54:36.000Z" itemprop="datePublished">Oct 31 2015</time>
+    更新日期:<time datetime="2015-10-31T09:57:37.000Z" itemprop="dateModified">Oct 31 2015</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目錄</strong>
+		<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2015-10-28_400上线_entry-biz-{hash}-js_404"><span class="toc-number">1.</span> <span class="toc-text">2015-10-28 400上线 entry.biz.{hash}.js 404</span></a></li></ol>
+		</div>
+		
+		<h1 id="2015-10-28_400上线_entry-biz-{hash}-js_404">2015-10-28 400上线 entry.biz.{hash}.js 404</h1><p>背景：<br>400系统测试环境<a href="http://192.168.1.224:8080/internal/index.html；" target="_blank" rel="external">http://192.168.1.224:8080/internal/index.html；</a> 线上 <a href="http://400.zufangzi.com；" target="_blank" rel="external">http://400.zufangzi.com；</a><br>400第一版上线后，首页加载js太大，速度慢，进行优化后，部分js——entry.biz.{hash}.js ，会在登陆后，点击菜单进行加载。<br>按需加载的js，在测试环境js的路径是 xx /internal/asset， 线上是  asset/。因此，webpack线上的config中publicPath设置为了/asset/,  测试环境是/internal/asset/，测试环境测试通过。</p>
+<p>case：<br>2015-10-27晚上上线后，没有登陆，进行检查，FE也没有跟进上线。2015-10-28 发现400登陆后，菜单点击无效。排查问题后，发现 entry.biz.{hash}.js的请求路径不对，线上应该是 <a href="http://400.zufangzi.com/asset/entry.biz.{hash}.js，但是却是" target="_blank" rel="external">http://400.zufangzi.com/asset/entry.biz.{hash}.js，但是却是</a> <a href="http://400.zufangzi.com/internal/asset/entry.biz.{hash}.js；" target="_blank" rel="external">http://400.zufangzi.com/internal/asset/entry.biz.{hash}.js；</a></p>
+<p>原因：<br>线上webpack的配置文件：wp.config.release.js</p>
+<pre><code><span class="built_in">var</span> webpack = <span class="keyword">require</span>(<span class="string">"webpack"</span>);
+<span class="built_in">var</span> config = <span class="keyword">require</span>(<span class="string">'./wp.config'</span>)
+<span class="built_in">var</span> ExtractTextPlugin = <span class="keyword">require</span>(<span class="string">'extract-text-webpack-plugin'</span>);
+
+<span class="comment">// 线上</span>
+config<span class="built_in">.</span>output<span class="built_in">.</span>publicPath = <span class="string">'/asset/'</span>;
+<span class="attribute">...</span><span class="attribute">...</span>
+module<span class="built_in">.</span>exports = config;
+</code></pre><p>测试环境的配置文件：wp.config.staging.js</p>
+<pre><code><span class="built_in">var</span> webpack = <span class="keyword">require</span>(<span class="string">"webpack"</span>);
+<span class="built_in">var</span> config = <span class="keyword">require</span>(<span class="string">'./wp.config'</span>)
+<span class="built_in">var</span> ExtractTextPlugin = <span class="keyword">require</span>(<span class="string">'extract-text-webpack-plugin'</span>);
+
+config<span class="built_in">.</span>output<span class="built_in">.</span>publicPath = <span class="string">"/internal/asset/"</span>;
+<span class="attribute">...</span><span class="attribute">...</span>
+module<span class="built_in">.</span>exports = config;
+</code></pre><p>公共的wp.config.js</p>
+<pre><code><span class="module"><span class="keyword">module</span>.exports = </span>{
+    entry: {
+        common: [<span class="string">'react'</span>, <span class="string">'antd'</span>],
+        entry: [
+            <span class="string">'webpack-dev-server/client?http://localhost:8080'</span>,
+            <span class="string">'webpack/hot/only-dev-server'</span>,
+            <span class="string">'./src/router'</span>
+        ]
+    },
+    debug: <span class="literal">true</span>,
+    <span class="comment">// devtool: 'cheap-module-inline-source-map',</span>
+    output: {
+        <span class="comment">// @<span class="doctag">NOTE:</span> https://github.com/webpack/webpack-dev-server/issues/88</span>
+        <span class="comment">// use to solve the proble which path is unvalid</span>
+        path: <span class="string">'/'</span>,
+        publicPath: <span class="string">'/asset/'</span>,
+        filename: <span class="string">'[name].js'</span>,
+        chunkFilename: <span class="string">'entry.biz.[hash].js'</span>
+    },
+    <span class="module"><span class="keyword">module</span>: </span>{
+        ....
+    },
+    ......
+}
+</code></pre><p>由上面的代码可知配置文件，的确是没有问题的。</p>
+<p>gulp打包线上代码：</p>
+<pre><code><span class="keyword">import</span> gutil <span class="keyword">from</span> <span class="string">'gulp-util'</span>;
+<span class="keyword">import</span> webpack <span class="keyword">from</span> <span class="string">'webpack'</span>;
+<span class="keyword">import</span> {exec} <span class="keyword">from</span> <span class="string">'child_process'</span>;
+<span class="keyword">import</span> definePlugin <span class="keyword">from</span> <span class="string">'./util/define-plugin.js'</span>;
+
+<span class="comment">// create optimizations array</span>
+<span class="keyword">const</span> optimizations = [
+    definePlugin,
+    <span class="keyword">new</span> webpack.optimize.DedupePlugin(),
+    <span class="keyword">new</span> webpack.optimize.UglifyJsPlugin({
+        output: {
+            comments: <span class="literal">false</span>,
+        },
+        compress: {
+           warnings: <span class="literal">false</span>,
+        },
+    }),
+];
+
+<span class="comment">// get build config</span>
+<span class="keyword">const</span> buildConfig = <span class="built_in">require</span>(<span class="string">'../buildConfig.js'</span>);
+<span class="comment">// get webpack config</span>
+<span class="keyword">const</span> wpConfig = buildConfig.webpackConfig.production;
+
+<span class="comment">// export initilizer</span>
+<span class="keyword">export</span> <span class="keyword">default</span> (gulp) =&gt; {
+    gulp.task(<span class="string">'build'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">callback</span>) </span>{
+        ......
+    });
+};
+</code></pre><p>由上可知，gulp引入的文件，也没有问题。<br>查看 buildConfig.js,  问题出在以下代码的3个require</p>
+<pre><code><span class="tag">export</span> <span class="tag">default</span> {
+    <span class="tag">webpackConfig</span>: {
+        <span class="tag">debug</span>: <span class="tag">require</span>(<span class="string">'./wp.config.js'</span>),
+        <span class="tag">production</span>: <span class="tag">require</span>(<span class="string">'./wp.config.release.js'</span>),
+        <span class="tag">staging</span>: <span class="tag">require</span>(<span class="string">'./wp.config.staging.js'</span>)
+    },
+    <span class="tag">devServer</span>: {
+        <span class="comment">// settings for dev-server</span>
+        <span class="comment">// @link: https://github.com/webpack/webpack-dev-server/pull/127</span>
+        <span class="tag">proxy</span>: <span class="attr_selector">[
+        ]</span>,
+        <span class="tag">headers</span>: {
+        }
+    }
+};
+</code></pre><p>require的机制是，require一个文件时，先解析出这个文件的路径，读取文件，然后将该文件丢如一个context运行，获取和保存exports，当其他地方，再次require这个文件时，会将之前保存的exports直接返回给你。</p>
+<p>由wp.config.js 的代码可知，wp.config.js exports出的是个Object。</p>
+<p>所以，在buildConfig.js代码片段中：production：require(‘./wp.config.release.js’)—— wp.config.release.js中require了wp.config.js, 并且将publicPath 改为了/asset/;   在staging: require(‘./wp.config.staging.js’)  中—— wp.config.staging.js再次require了wp.config.js,其实，它们拿到的是同一个Object，并将publicPath 改为了/internal/asset/;</p>
+<p>因此，虽然走的是线上的编译配置文件，但是publicPath还是测试环境的。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/require/">require</a><a href="/tags/webpack/">webpack</a>
+  </div>
+
+
+
+
+<div class="article-share" id="share">
+
+  <div data-url="http://yoursite.com/2015/10/31/require返回Object带来的线上bug/" data-title="require返回Object带来的线上bug | Stone" data-tsina="null" class="share clearfix">
+  </div>
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2015/10/31/栅格系统/"  title="栅格系统">
+ <strong>NEXT:</strong><br/> 
+ <span>栅格系统
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="顯示側邊欄"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目錄</strong>
+  <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#2015-10-28_400上线_entry-biz-{hash}-js_404"><span class="toc-number">1.</span> <span class="toc-text">2015-10-28 400上线 entry.biz.{hash}.js 404</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隱藏側邊欄"></a></div>
+<aside class="clearfix">
+
+  
+
+  
+<div class="tagslist">
+	<p class="asidetitle">標簽</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/css/" title="css">css<sup>1</sup></a></li>
+		
+			<li><a href="/tags/less/" title="less">less<sup>1</sup></a></li>
+		
+			<li><a href="/tags/require/" title="require">require<sup>1</sup></a></li>
+		
+			<li><a href="/tags/webpack/" title="webpack">webpack<sup>3</sup></a></li>
+		
+			<li><a href="/tags/webpack-dev-server/" title="webpack-dev-server">webpack-dev-server<sup>1</sup></a></li>
+		
+			<li><a href="/tags/打包/" title="打包">打包<sup>1</sup></a></li>
+		
+			<li><a href="/tags/栅格/" title="栅格">栅格<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  <div class="rsspart">
+	<a href="null" target="_blank" title="rss">RSS 訂閱</a>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2015 
+		
+		<a href="http://yoursite.com" title="Stone">Stone</a>
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  '<div class="qrcode clearfix"><span>扫描二维码分享到微信朋友圈</span><a class="qrclose" href="#share"></a><strong>Loading...Please wait</strong><img id="qrcode-pic" data-src="http://s.jiathis.com/qrcode.php?url=' + encodedUrl + '"/></div>',
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="QRcode"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});     
+</script>
+
+
+
+
+
+
+  </body>
+</html>
